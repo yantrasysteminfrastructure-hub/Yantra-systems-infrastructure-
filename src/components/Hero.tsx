@@ -11,13 +11,14 @@ export function Hero() {
   const [webgl, setWebgl] = useState<boolean | null>(null);
   useEffect(() => setWebgl(hasWebGL()), []);
   const [slide, setSlide] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [holding, setHolding] = useState(false);
   const reduced = useReducedMotion();
   const [heroRef, heroInView] = useInView<HTMLElement>('0px');
-  // auto-advance only while the hero is visible, not paused, and motion is allowed
-  const running = !paused && !holding && heroInView && !reduced;
-  const next = () => setSlide((i) => (i + 1) % HERO_SLIDES.length);
+  // the 3D changes by itself every few seconds while the hero is on screen (not for reduced motion)
+  useEffect(() => {
+    if (!webgl || !heroInView || reduced) return;
+    const id = window.setInterval(() => setSlide((i) => (i + 1) % HERO_SLIDES.length), HERO_SLIDE_MS);
+    return () => clearInterval(id);
+  }, [webgl, heroInView, reduced]);
 
   const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,54 +38,6 @@ export function Hero() {
             <HeroScene slide={slide} />
           </Suspense>
         ) : null}
-        {webgl && (
-          <div
-            className={`showcase${running ? '' : ' is-paused'}${reduced ? ' is-static' : ''}`}
-            role="group"
-            aria-label="3D showcase"
-            // hold while a mouse hovers or a keyboard user is on the controls (not after a tap)
-            onPointerEnter={(e) => e.pointerType === 'mouse' && setHolding(true)}
-            onPointerLeave={() => setHolding(false)}
-            onFocus={(e) => e.target.matches(':focus-visible') && setHolding(true)}
-            onBlur={() => setHolding(false)}
-          >
-            <ol className="showcase__tabs">
-              {HERO_SLIDES.map((s, i) => (
-                <li key={s.id}>
-                  <button
-                    type="button"
-                    className={`showcase__tab${i === slide ? ' is-on' : ''}${i < slide ? ' is-done' : ''}`}
-                    aria-current={i === slide ? 'true' : undefined}
-                    onClick={() => setSlide(i)}
-                  >
-                    <span className="showcase__label">{s.label}</span>
-                    <span className="showcase__track" aria-hidden="true">
-                      {i === slide && (
-                        <span
-                          key={slide}
-                          className="showcase__fill"
-                          style={{ animationDuration: `${HERO_SLIDE_MS}ms` }}
-                          onAnimationEnd={next}
-                        />
-                      )}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-            {!reduced && (
-              <button
-                type="button"
-                className="showcase__pause"
-                aria-label={paused ? 'Play showcase' : 'Pause showcase'}
-                aria-pressed={paused}
-                onClick={() => setPaused((p) => !p)}
-              >
-                <svg viewBox="0 0 20 20" aria-hidden="true">{paused ? <path d="M7 5v10l8-5z" /> : <path d="M7 5v10M13 5v10" />}</svg>
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
       <div className="container hero__inner">

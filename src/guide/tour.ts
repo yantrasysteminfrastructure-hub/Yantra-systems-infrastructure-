@@ -12,12 +12,6 @@ export interface TourStep {
 /** The guided walk through the website, top to bottom. */
 export const TOUR: TourStep[] = [
   {
-    section: 'home',
-    target: '.showcase',
-    title: 'Home',
-    text: 'This is the home screen. The 3D showcase changes every few seconds — embedded boards, mobile apps, websites, civil drawings and buildings. Tap a name below it to jump straight to one.',
-  },
-  {
     section: 'about',
     target: '#about .about__copy',
     title: 'About Yantra',
