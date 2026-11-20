@@ -5,12 +5,12 @@ import * as THREE from 'three';
 import { LIME } from './DevBoard';
 import { createCodeScreen, createKeyboardTexture, createPhoneScreen, createSitePlanTexture, createWoodTexture } from './screens';
 
-function useDispose(...items: { dispose(): void }[]) {
+export function useDispose(...items: { dispose(): void }[]) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => () => items.forEach((i) => i.dispose()), items);
 }
 
-function useMaterial(params: THREE.MeshStandardMaterialParameters) {
+export function useMaterial(params: THREE.MeshStandardMaterialParameters) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const m = useMemo(() => new THREE.MeshStandardMaterial(params), []);
   useDispose(m);
@@ -461,7 +461,8 @@ export function GearAssembly({ animate }: { animate: boolean }) {
 /* ------------------------------------------------------------------ */
 /* Civil: building rises floor by floor while the tower crane works    */
 /* ------------------------------------------------------------------ */
-export function BuildingModel({ animate }: { animate: boolean }) {
+/** `since` restarts the construction from the ground each time the model is shown; `build` is seconds per floor. */
+export function BuildingModel({ animate, since, build = 1.6 }: { animate: boolean; since?: { current: number }; build?: number }) {
   const plan = useMemo(() => createSitePlanTexture(1024), []);
   useDispose(plan);
   const planMat = useMemo(() => new THREE.MeshStandardMaterial({ map: plan, roughness: 0.9 }), [plan]);
@@ -492,10 +493,11 @@ export function BuildingModel({ animate }: { animate: boolean }) {
   const hook = useRef<THREE.Group>(null);
   const cable = useRef<THREE.Mesh>(null);
 
-  const BUILD = 1.6; // seconds per floor
+  const BUILD = build;
+  const SWING = 1.6; // crane slew period
   const CYCLE = floors * BUILD + 5;
   useFrame(({ clock }) => {
-    const t = animate ? clock.elapsedTime % CYCLE : CYCLE - 1;
+    const t = !animate ? CYCLE - 1 : since ? Math.min(CYCLE - 1, clock.elapsedTime - since.current) : clock.elapsedTime % CYCLE;
     const resetting = t > CYCLE - 0.8;
     const fade = resetting ? (CYCLE - t) / 0.8 : 1;
     floorRefs.current.forEach((g, f) => {
@@ -512,7 +514,7 @@ export function BuildingModel({ animate }: { animate: boolean }) {
       m.scale.y = Math.max(0.0001, p * fade);
     });
     // crane slews towards the building while lifting, and back to pick up the next load
-    const phase = (t % BUILD) / BUILD;
+    const phase = (t % SWING) / SWING;
     if (jib.current) jib.current.rotation.y = 0.35 + Math.sin(phase * Math.PI * 2) * 0.55;
     const drop = 0.6 + Math.abs(Math.cos(phase * Math.PI)) * 1.6;
     if (hook.current) hook.current.position.y = -drop;

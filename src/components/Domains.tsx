@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { PROGRAMMES, fillDeliverable, typesFor, type DomainScene as SceneId, type ProgrammeId } from '../data/content';
-import { hasWebGL } from '../hooks';
+import { hasWebGL, scrollToId } from '../hooks';
+import { OPEN_PLANNER_EVENT, type PlannerTarget } from '../lib/guideEvents';
 import { DomainFallback } from './visuals/DomainFallback';
 import { requestEnquiry } from './Services';
 import { IdeaExplorer } from './IdeaExplorer';
@@ -36,6 +37,21 @@ export function Domains() {
     setProgrammeId(id);
     setBranchIdx(Math.max(0, branchId ? p.branches.findIndex((b) => b.id === branchId) : 0));
   };
+
+  // the guide can open the planner on a programme / branch / project type
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const { programme: id, branch: branchId, type } = (e as CustomEvent<PlannerTarget>).detail;
+      const p = PROGRAMMES.find((x) => x.id === id);
+      if (!p) return;
+      setProgrammeId(id);
+      setBranchIdx(Math.max(0, branchId ? p.branches.findIndex((b) => b.id === branchId) : 0));
+      if (type) setTypeId(type);
+      scrollToId('domains');
+    };
+    window.addEventListener(OPEN_PLANNER_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_PLANNER_EVENT, onOpen);
+  }, []);
 
   return (
     <section id="domains" className="section section--light domains" aria-labelledby="domains-title">

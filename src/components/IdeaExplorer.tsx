@@ -2,6 +2,8 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { PROGRAMMES, type Branch, type Programme } from '../data/content';
 import type { Idea } from '../data/ideas';
 import { requestEnquiry } from './Services';
+import { OPEN_IDEA_EVENT } from '../lib/guideEvents';
+import { scrollToId } from '../hooks';
 
 interface Located {
   idea: Idea;
@@ -77,9 +79,35 @@ export function IdeaExplorer({ programme, branch, projectTypeLabel, onPick }: Pr
 
   const selected = list.find((l) => l.idea.id === selectedId) ?? list[0] ?? null;
 
+  // The guide can open a specific idea: switch the planner to its branch, then select it.
+  const pending = useRef<string | null>(null);
+  const latest = useRef({ branchId: branch.id, onPick });
+  latest.current = { branchId: branch.id, onPick };
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      import('../data/ideas').then(({ IDEAS }) => {
+        const idea = IDEAS.find((i) => i.id === id);
+        const l = idea && locate(idea);
+        if (!l) return;
+        setQuery('');
+        setSelectedId(id);
+        if (l.branch.id !== latest.current.branchId) {
+          pending.current = id;
+          latest.current.onPick(l.programme.id, l.branch.id);
+        }
+        const narrow = window.matchMedia('(max-width: 1023px)').matches;
+        setTimeout(() => (narrow ? detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) : scrollToId('ideas')), 80);
+      });
+    };
+    window.addEventListener(OPEN_IDEA_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_IDEA_EVENT, onOpen);
+  }, []);
+
   // When the branch changes (and not searching), start from its first idea.
   useEffect(() => {
-    if (!searching) setSelectedId(null);
+    if (!searching) setSelectedId(pending.current);
+    pending.current = null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branch.id]);
 
@@ -100,7 +128,7 @@ export function IdeaExplorer({ programme, branch, projectTypeLabel, onPick }: Pr
     });
 
   return (
-    <div className="ideas" data-reveal>
+    <div id="ideas" className="ideas" data-reveal>
       <div className="ideas__head">
         <div>
           <h3 className="ideas__title">
