@@ -13,7 +13,6 @@ interface Msg {
   reply?: BotReply;
 }
 
-const TOURED_KEY = 'yantra-guide-toured';
 const VOICE_KEY = 'yantra-guide-voice';
 const store = {
   get(k: string) {
@@ -180,7 +179,7 @@ function ReplyView({ reply, onAction, onIdea, onChip, last }: { reply: BotReply;
 export default function Guide() {
   const reduced = useReducedMotion();
   const bot = useMemo(() => createBot(), []);
-  const returning = useMemo(() => store.get(TOURED_KEY) === '1', []);
+  // The site has no server to recognise returning visitors (e.g. by IP), so every visit gets the greeting and tour offer.
   const [mode, setMode] = useState<Mode>('hidden');
   const [step, setStep] = useState(0);
   const [morph, setMorph] = useState(false);
@@ -201,16 +200,8 @@ export default function Guide() {
     const t = window.setTimeout(() => setMode('greet'), 900);
     return () => clearTimeout(t);
   }, []);
-  // returning visitors: tuck away by himself if ignored
-  useEffect(() => {
-    if (mode !== 'greet' || !returning) return;
-    const t = window.setTimeout(() => !touched.current && setMode('dock'), 9000);
-    return () => clearTimeout(t);
-  }, [mode, returning]);
-
-  const greetText = returning
-    ? 'Welcome back! 👋 Ask me about project ideas, documentation, or how to reach the team.'
-    : 'Hi, I’m your Yantra guide! 👋 New here? I can walk you through the whole website in about a minute — what each section does and how to start your project.';
+  const greetText =
+    'Hi, I’m your Yantra guide! 👋 I can walk you through the whole website in about a minute — what each section does and how to start your project.';
   const current = TOUR[step];
   const bubbleText = mode === 'greet' ? greetText : mode === 'tour' ? current.text : '';
   const typed = useTyped(bubbleText, !reduced && (mode === 'greet' || mode === 'tour'));
@@ -260,7 +251,6 @@ export default function Guide() {
 
   const endTour = useCallback(
     (finished: boolean) => {
-      store.set(TOURED_KEY, '1');
       speak('', false);
       const intro: BotReply = {
         text: [
@@ -453,25 +443,14 @@ export default function Guide() {
           )}
           <div className="guide-bubble__actions">
             {mode === 'greet' ? (
-              returning ? (
-                <>
-                  <button type="button" className="gbtn gbtn--lime" onClick={() => openChat()}>
-                    Ask me
-                  </button>
-                  <button type="button" className="gbtn" onClick={startTour}>
-                    Replay the tour
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button type="button" className="gbtn gbtn--lime" onClick={startTour}>
-                    Show me around
-                  </button>
-                  <button type="button" className="gbtn" onClick={() => openChat()}>
-                    Ask a question
-                  </button>
-                </>
-              )
+              <>
+                <button type="button" className="gbtn gbtn--lime" onClick={startTour}>
+                  Show me around
+                </button>
+                <button type="button" className="gbtn" onClick={() => openChat()}>
+                  Ask a question
+                </button>
+              </>
             ) : (
               <>
                 <button type="button" className="gbtn gbtn--ghost" onClick={() => endTour(false)}>
