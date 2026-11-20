@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { BRANCH_OPTIONS, CONTACT, SERVICE_OPTIONS } from '../data/content';
+import { ALL_BRANCHES, CONTACT, SERVICE_OPTIONS, programmeForService, typesFor, type EnquiryPreset } from '../data/content';
 import { EmailText } from './EmailText';
 import { HAS_BACKEND, mailtoLink, submitEnquiry, validate, whatsappLink, type Enquiry, type Errors } from '../lib/enquiry';
 import { SELECT_SERVICE_EVENT } from './Services';
 
-const EMPTY: Enquiry = { name: '', phone: '', email: '', service: '', branch: '', message: '' };
-const ORDER: (keyof Enquiry)[] = ['name', 'phone', 'email', 'service', 'branch', 'message'];
+const EMPTY: Enquiry = { name: '', phone: '', email: '', service: '', branch: '', projectType: '', message: '' };
+const ORDER: (keyof Enquiry)[] = ['name', 'phone', 'email', 'service', 'branch', 'projectType', 'message'];
 
 type Status =
   | { kind: 'idle' }
@@ -14,7 +14,19 @@ type Status =
   | { kind: 'handoff'; channel: 'WhatsApp' | 'email' }
   | { kind: 'error'; message: string };
 
-const ACADEMIC = /B\.Tech|Degree|Documentation/;
+const ACADEMIC = /B\.Tech|Degree|Documentation|MBA|School/;
+
+/** Branches relevant to the chosen service (all branches when it isn't a student programme). */
+function branchesFor(service: string) {
+  const p = programmeForService(service);
+  return p ? p.branches.map((b) => b.title) : ALL_BRANCHES;
+}
+
+/** Project types offered for the chosen service's programme. */
+function typeOptionsFor(service: string) {
+  const p = programmeForService(service);
+  return p ? typesFor(p).map((t) => t.label) : [];
+}
 
 export function Contact() {
   const [values, setValues] = useState<Enquiry>(EMPTY);
@@ -27,8 +39,20 @@ export function Contact() {
 
   useEffect(() => {
     const onSelect = (e: Event) => {
-      const value = (e as CustomEvent<string>).detail;
-      if (SERVICE_OPTIONS.includes(value)) setValues((v) => ({ ...v, service: value }));
+      const p = (e as CustomEvent<EnquiryPreset>).detail;
+      if (!p || !SERVICE_OPTIONS.includes(p.service)) return;
+      setValues((v) => {
+        const branch = p.branch !== undefined ? p.branch : v.branch;
+        return {
+          ...v,
+          service: p.service,
+          branch: branch && branchesFor(p.service).includes(branch) ? branch : '',
+          projectType: p.projectType && typeOptionsFor(p.service).includes(p.projectType) ? p.projectType : '',
+          // only pre-fill the description if the visitor hasn't written one yet
+          message: p.message && !v.message.trim() ? p.message : v.message,
+        };
+      });
+      setErrors((er) => ({ ...er, service: undefined }));
     };
     window.addEventListener(SELECT_SERVICE_EVENT, onSelect);
     return () => window.removeEventListener(SELECT_SERVICE_EVENT, onSelect);
@@ -36,6 +60,11 @@ export function Contact() {
 
   const set = (k: keyof Enquiry) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const next = { ...values, [k]: e.target.value };
+    if (k === 'service') {
+      // keep dependent fields consistent with the chosen service
+      if (next.branch && next.branch !== 'Other' && !branchesFor(next.service).includes(next.branch)) next.branch = '';
+      if (!typeOptionsFor(next.service).includes(next.projectType)) next.projectType = '';
+    }
     setValues(next);
     if (touched[k]) setErrors((prev) => ({ ...prev, [k]: validate(next)[k] }));
     if (status.kind === 'error' || status.kind === 'handoff') setStatus({ kind: 'idle' });
@@ -110,6 +139,8 @@ export function Contact() {
     ) : null;
 
   const showBranch = !values.service || ACADEMIC.test(values.service);
+  const projectTypes = typeOptionsFor(values.service);
+  const showProjectType = projectTypes.length > 0;
 
   return (
     <section id="contact" className="section section--dark contact" aria-labelledby="contact-title">
@@ -191,17 +222,33 @@ export function Contact() {
             </div>
             <div className={`field${showBranch ? '' : ' field--muted'}`}>
               <label htmlFor="f-branch">
-                Engineering branch <span className="field__opt">(if applicable)</span>
+                Branch <span className="field__opt">(if applicable)</span>
               </label>
               <div className="select">
                 <select {...field('branch')}>
                   <option value="">Not applicable</option>
-                  {BRANCH_OPTIONS.map((o) => (
+                  {branchesFor(values.service).map((o) => (
                     <option key={o}>{o}</option>
                   ))}
+                  <option>Other</option>
                 </select>
               </div>
             </div>
+            {showProjectType && (
+              <fieldset className="field field--full field--reveal">
+                <legend className="field__legend">
+                  Type of project <span className="field__opt">(optional)</span>
+                </legend>
+                <div className="choice-row">
+                  {projectTypes.map((o) => (
+                    <label key={o} className={`choice${values.projectType === o ? ' is-on' : ''}`}>
+                      <input type="radio" name="projectType" value={o} checked={values.projectType === o} onChange={set('projectType')} />
+                      {o}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
             <div className="field field--full">
               <label htmlFor="f-message">Project or service description</label>
               <textarea rows={5} maxLength={2000} placeholder="What would you like to build or get help with?" {...field('message')} />

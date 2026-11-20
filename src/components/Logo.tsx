@@ -7,7 +7,7 @@ export function Logo({ size = 'md' }: { size?: 'md' | 'lg' }) {
     <span className={`logo-plate logo-plate--${size}`}>
       <picture>
         <source srcSet="/logo.webp" type="image/webp" />
-        <img src="/logo-sm.png" alt="Yantra Systems & Infrastructure" width={353} height={120} decoding="async" />
+        <img src="/logo.png" alt="Yantra Systems & Infrastructure" width={471} height={160} decoding="async" />
       </picture>
     </span>
   );

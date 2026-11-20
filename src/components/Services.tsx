@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { SERVICES, type Service } from '../data/content';
+import { SERVICES, type EnquiryPreset, type Service } from '../data/content';
 import { scrollToId } from '../hooks';
 import { ServiceVisual } from './visuals/ServiceVisual';
 
 export const SELECT_SERVICE_EVENT = 'yantra:select-service';
 
-export function requestService(value: string) {
-  window.dispatchEvent(new CustomEvent(SELECT_SERVICE_EVENT, { detail: value }));
+/** Pre-fills the enquiry form (service, and optionally branch / project type) and scrolls to it. */
+export function requestEnquiry(preset: EnquiryPreset) {
+  window.dispatchEvent(new CustomEvent<EnquiryPreset>(SELECT_SERVICE_EVENT, { detail: preset }));
   scrollToId('contact');
+}
+
+export function requestService(service: string) {
+  requestEnquiry({ service });
 }
 
 function ServiceCard({ service, index }: { service: Service; index: number }) {

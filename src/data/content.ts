@@ -90,104 +90,319 @@ export const SERVICES: Service[] = [
   },
 ];
 
-export const SERVICE_OPTIONS = [...SERVICES.map((s) => s.formValue), 'Other / Not sure yet'];
-
-export const BRANCH_OPTIONS = [
-  'Computer Science & Engineering (CSE)',
-  'Electronics & Communication (ECE)',
-  'Electrical & Electronics (EEE)',
-  'Mechanical Engineering',
-  'Civil Engineering',
-  'Degree programme',
-  'Other',
+export const SERVICE_OPTIONS = [
+  ...SERVICES.map((s) => s.formValue),
+  'MBA Project / Documentation',
+  'School Project',
+  'Other / Not sure yet',
 ];
 
-export type DomainScene = 'embedded' | 'software' | 'mechanical' | 'civil';
+export type DomainScene = 'software' | 'embedded' | 'electrical' | 'mechanical' | 'civil' | 'business' | 'parking';
+export type ProgrammeId = 'btech' | 'degree' | 'mba' | 'school';
 
-export interface Domain {
+export interface Branch {
   id: string;
   short: string;
   title: string;
   scene: DomainScene;
   summary: string;
+  /** Typical technical areas for projects in this branch. */
   areas: string[];
-  services: string[];
-  /** Enquiry-form service pre-selected by this domain's CTA. */
-  formService: string;
+  /** What the main deliverable looks like for this branch. */
+  build: string;
+  /** Kind of diagrams / analysis that go into the report for this branch. */
+  diagrams: string;
 }
 
-export const DOMAINS: Domain[] = [
+export interface Programme {
+  id: ProgrammeId;
+  label: string;
+  /** Matching value in the enquiry form's "Service required" list. */
+  formService: string;
+  /** Project types offered for this programme (ids from PROJECT_TYPES). */
+  types: string[];
+  branches: Branch[];
+}
+
+const ENGINEERING_TYPES = ['complete', 'mini', 'implementation', 'documentation', 'ppt'];
+
+export const PROGRAMMES: Programme[] = [
   {
-    id: 'cse',
-    short: 'CSE',
-    title: 'Computer Science & Engineering',
-    scene: 'software',
-    summary: 'Software-focused academic projects and application development.',
-    areas: ['Web development', 'Application development', 'Python', 'AI / ML', 'Database systems', 'IoT & software applications'],
-    services: ['B.Tech Projects', 'Web & Mobile App Development', 'Project Documentation'],
+    id: 'btech',
+    label: 'B.Tech',
     formService: 'B.Tech Project',
-  },
-  {
-    id: 'ece',
-    short: 'ECE',
-    title: 'Electronics & Communication',
-    scene: 'embedded',
-    summary: 'Electronics and microcontroller-based project work.',
-    areas: ['Microcontroller-based systems', 'Sensor integration', 'IoT applications', 'Circuit-level implementation'],
-    services: ['B.Tech Projects', 'Embedded Systems', 'Project Documentation'],
-    formService: 'Embedded Systems / IoT',
-  },
-  {
-    id: 'eee',
-    short: 'EEE',
-    title: 'Electrical & Electronics',
-    scene: 'embedded',
-    summary: 'Electrical and electronics project development and guidance.',
-    areas: ['Electronics-based projects', 'Microcontroller control', 'Sensor & monitoring systems', 'Hardware–software interfacing'],
-    services: ['B.Tech Projects', 'Embedded Systems', 'Project Documentation'],
-    formService: 'Embedded Systems / IoT',
-  },
-  {
-    id: 'mech',
-    short: 'MECH',
-    title: 'Mechanical Engineering',
-    scene: 'mechanical',
-    summary: 'Academic project development and guidance for mechanical engineering students.',
-    areas: ['Mechanical project concepts', 'Design-oriented project work', 'Embedded control where applicable', 'Reports & diagrams'],
-    services: ['B.Tech Projects', 'Project Documentation'],
-    formService: 'B.Tech Project',
-  },
-  {
-    id: 'civil',
-    short: 'CIVIL',
-    title: 'Civil Engineering',
-    scene: 'civil',
-    summary: 'Civil engineering academic projects alongside civil works and infrastructure-related services.',
-    areas: ['Civil engineering academic projects', 'Drawings & planning documentation', 'Civil works', 'Infrastructure-related services'],
-    services: ['B.Tech Projects', 'Civil Works & Infrastructure', 'Project Documentation'],
-    formService: 'Civil Works / Infrastructure',
-  },
-  {
-    id: 'iot',
-    short: 'IoT',
-    title: 'Embedded Systems & IoT',
-    scene: 'embedded',
-    summary: 'Microcontroller-based development connecting sensors, hardware and software.',
-    areas: ['ESP32 development', 'Arduino development', 'Sensor integration', 'IoT applications', 'Hardware–software interfacing'],
-    services: ['Embedded Systems', 'B.Tech Projects', 'Degree Projects'],
-    formService: 'Embedded Systems / IoT',
+    types: ENGINEERING_TYPES,
+    branches: [
+      {
+        id: 'cse',
+        short: 'CSE',
+        title: 'Computer Science & Engineering',
+        scene: 'software',
+        summary: 'Software-focused projects: web, mobile, Python, AI / ML and database applications.',
+        areas: ['Web development', 'Application development', 'Python', 'AI / ML', 'Database systems', 'IoT & software applications'],
+        build: 'Working application with source code',
+        diagrams: 'UML, ER and flow diagrams',
+      },
+      {
+        id: 'ece',
+        short: 'ECE',
+        title: 'Electronics & Communication',
+        scene: 'embedded',
+        summary: 'Microcontroller, sensor and IoT-based electronics projects.',
+        areas: ['Microcontroller-based systems', 'ESP32 / Arduino', 'Sensor integration', 'IoT applications', 'Circuit-level implementation'],
+        build: 'Working circuit or embedded prototype',
+        diagrams: 'Block and circuit diagrams',
+      },
+      {
+        id: 'eee',
+        short: 'EEE',
+        title: 'Electrical & Electronics',
+        scene: 'electrical',
+        summary: 'Electrical and electronics projects with control, switching and monitoring.',
+        areas: ['Motor & load control', 'Relay-based switching', 'Sensor & monitoring systems', 'Microcontroller control', 'Hardware–software interfacing'],
+        build: 'Working electrical / electronics prototype',
+        diagrams: 'Circuit and block diagrams',
+      },
+      {
+        id: 'mech',
+        short: 'MECH',
+        title: 'Mechanical Engineering',
+        scene: 'mechanical',
+        summary: 'Mechanism, design-oriented and model-based mechanical projects.',
+        areas: ['Mechanisms & power transmission', 'Design-oriented project work', 'Project models', 'Embedded control where applicable'],
+        build: 'Design and project model',
+        diagrams: 'Technical drawings and mechanism diagrams',
+      },
+      {
+        id: 'civil',
+        short: 'CIVIL',
+        title: 'Civil Engineering',
+        scene: 'civil',
+        summary: 'Planning, drawing and structure-oriented civil engineering projects.',
+        areas: ['Building planning', 'Drawings & layouts', 'Structure-oriented project work', 'Infrastructure-related studies'],
+        build: 'Plans, drawings and project model',
+        diagrams: 'Plans, elevations and layout drawings',
+      },
+    ],
   },
   {
     id: 'degree',
-    short: 'DEGREE',
-    title: 'Degree-level Academic Projects',
-    scene: 'software',
-    summary: 'Academic project development and technical guidance for degree students.',
-    areas: ['Practical implementation', 'Learning-focused guidance', 'Project presentation', 'Documentation support'],
-    services: ['Degree Projects', 'Project Documentation', 'Web & Mobile App Development'],
+    label: 'Degree',
     formService: 'Degree Project',
+    types: ENGINEERING_TYPES,
+    branches: [
+      {
+        id: 'bca',
+        short: 'BCA',
+        title: 'BCA',
+        scene: 'software',
+        summary: 'Application and web projects for Bachelor of Computer Applications students.',
+        areas: ['Web applications', 'Mobile applications', 'Database systems', 'Python'],
+        build: 'Working application with source code',
+        diagrams: 'UML, ER and flow diagrams',
+      },
+      {
+        id: 'bsc-cs',
+        short: 'B.Sc CS',
+        title: 'B.Sc Computer Science',
+        scene: 'software',
+        summary: 'Software projects for computer science degree students.',
+        areas: ['Web development', 'Python', 'AI / ML', 'Database systems'],
+        build: 'Working application with source code',
+        diagrams: 'UML, ER and flow diagrams',
+      },
+      {
+        id: 'bsc-ele',
+        short: 'B.Sc ELE',
+        title: 'B.Sc Electronics',
+        scene: 'embedded',
+        summary: 'Electronics and microcontroller projects for degree students.',
+        areas: ['Microcontroller-based systems', 'Sensor integration', 'IoT applications'],
+        build: 'Working circuit or embedded prototype',
+        diagrams: 'Block and circuit diagrams',
+      },
+      {
+        id: 'bcom',
+        short: 'B.Com/BBA',
+        title: 'B.Com / BBA',
+        scene: 'business',
+        summary: 'Study-based business projects with research, data analysis and a structured report.',
+        areas: ['Market & consumer studies', 'Financial analysis', 'Business process studies', 'Survey & data analysis'],
+        build: 'Research-based project report',
+        diagrams: 'Charts, tables and data analysis',
+      },
+      {
+        id: 'other-degree',
+        short: 'OTHER',
+        title: 'Other degree programmes',
+        scene: 'software',
+        summary: 'Technical projects for other degree disciplines, scoped together with you.',
+        areas: ['Practical implementation', 'Learning-focused guidance', 'Project presentation'],
+        build: 'Implementation suited to your subject',
+        diagrams: 'Diagrams relevant to your subject',
+      },
+    ],
+  },
+  {
+    id: 'mba',
+    label: 'MBA',
+    formService: 'MBA Project / Documentation',
+    types: ['report', 'documentation', 'ppt'],
+    branches: [
+      {
+        id: 'mba-fin',
+        short: 'FIN',
+        title: 'MBA Finance',
+        scene: 'business',
+        summary: 'Finance projects built on financial statements, market data and structured analysis.',
+        areas: ['Financial statement analysis', 'Investment & portfolio studies', 'Banking & credit studies', 'Ratio analysis'],
+        build: 'Research-based project report',
+        diagrams: 'Financial tables, ratios and charts',
+      },
+      {
+        id: 'mba-mkt',
+        short: 'MKT',
+        title: 'MBA Marketing',
+        scene: 'business',
+        summary: 'Marketing projects on consumers, brands and digital channels, backed by survey data.',
+        areas: ['Consumer behaviour', 'Brand studies', 'Digital marketing', 'Survey design & analysis'],
+        build: 'Research-based project report',
+        diagrams: 'Survey analysis with charts and tables',
+      },
+      {
+        id: 'mba-hr',
+        short: 'HR',
+        title: 'MBA Human Resources',
+        scene: 'business',
+        summary: 'HR projects on employees, workplace practices and organisational performance.',
+        areas: ['Employee engagement', 'Training & development', 'Performance appraisal', 'Workplace well-being'],
+        build: 'Research-based project report',
+        diagrams: 'Questionnaire analysis with charts and tables',
+      },
+      {
+        id: 'mba-ops',
+        short: 'OPS',
+        title: 'MBA Operations & Supply Chain',
+        scene: 'business',
+        summary: 'Operations projects on inventory, logistics, quality and process efficiency.',
+        areas: ['Inventory management', 'Logistics & supply chain', 'Quality management', 'Process improvement'],
+        build: 'Research-based project report',
+        diagrams: 'Process flow charts and data analysis',
+      },
+      {
+        id: 'mba-ba',
+        short: 'BA',
+        title: 'MBA Business Analytics',
+        scene: 'business',
+        summary: 'Analytics projects that turn business data into dashboards, forecasts and insights.',
+        areas: ['Data cleaning & analysis', 'Dashboards', 'Forecasting', 'Excel / Python / Power BI'],
+        build: 'Analysis report with dashboards',
+        diagrams: 'Dashboards, charts and data tables',
+      },
+    ],
+  },
+  {
+    id: 'school',
+    label: 'School',
+    formService: 'School Project',
+    types: ['model', 'complete', 'ppt'],
+    branches: [
+      {
+        id: 'school-stem',
+        short: 'SCHOOL',
+        title: 'School Science & Electronics Projects',
+        scene: 'parking',
+        summary: 'Working models with sensors and simple electronics for school exhibitions and science fairs.',
+        areas: ['Sensor-based models', 'Simple electronics', 'Arduino basics', 'Science exhibition models'],
+        build: 'Working model',
+        diagrams: 'Labelled diagrams and chart',
+      },
+    ],
   },
 ];
+
+export interface ProjectType {
+  id: string;
+  label: string;
+  hint: string;
+  /** Deliverables; {build} and {diagrams} are filled in from the branch. */
+  includes: string[];
+}
+
+export const PROJECT_TYPES: ProjectType[] = [
+  {
+    id: 'complete',
+    label: 'Complete project',
+    hint: 'Build + documentation + PPT',
+    includes: ['{build}', 'Project report with {diagrams}', 'Presentation slides (PPT)', 'Walkthrough of how the project works'],
+  },
+  {
+    id: 'mini',
+    label: 'Mini project',
+    hint: 'Smaller scope, shorter report',
+    includes: ['Smaller-scope {build}', 'Short report with {diagrams}', 'Explanation of the concepts used'],
+  },
+  {
+    id: 'implementation',
+    label: 'Implementation only',
+    hint: 'Working project, no report',
+    includes: ['{build}', 'Project files and setup details', 'Walkthrough of how the project works'],
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation only',
+    hint: 'Report, diagrams, formatting',
+    includes: ['Project report', '{diagrams}', 'Formatting to your college guidelines'],
+  },
+  {
+    id: 'ppt',
+    label: 'Presentation (PPT) only',
+    hint: 'Slides for your review / viva',
+    includes: ['Presentation slides', 'Diagrams for the slides', 'Guidance on presenting the project'],
+  },
+  {
+    id: 'report',
+    label: 'Complete project report',
+    hint: 'Research, analysis, report + PPT',
+    includes: ['{build} in your university format', 'Research methodology and {diagrams}', 'Presentation slides (PPT)', 'Guidance for your review / viva'],
+  },
+  {
+    id: 'model',
+    label: 'Working model',
+    hint: 'Built model for exhibition',
+    includes: ['{build}', 'Explanation of how it works', '{diagrams} for display'],
+  },
+];
+
+// lower-case the first letter, but leave acronyms such as "UML" alone
+const lower = (s: string) => (/^[A-Z]{2}/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
+
+/** Fills a deliverable template with branch-specific wording. */
+export function fillDeliverable(text: string, b: Branch) {
+  if (text.startsWith('{build}')) return text.replace('{build}', b.build);
+  if (text.startsWith('{diagrams}')) return text.replace('{diagrams}', b.diagrams);
+  return text.replace('{build}', lower(b.build)).replace('{diagrams}', lower(b.diagrams));
+}
+
+export function typesFor(p: Programme): ProjectType[] {
+  return p.types.map((id) => PROJECT_TYPES.find((t) => t.id === id)!);
+}
+
+/** The programme a form "Service required" value belongs to, if any. */
+export function programmeForService(service: string): Programme | undefined {
+  return PROGRAMMES.find((p) => p.formService === service);
+}
+
+/** Every branch name, for the enquiry form when no programme is chosen. */
+export const ALL_BRANCHES = PROGRAMMES.flatMap((p) => p.branches.map((b) => b.title));
+
+/** Payload for pre-filling the enquiry form from elsewhere on the page. */
+export interface EnquiryPreset {
+  service: string;
+  branch?: string;
+  projectType?: string;
+  message?: string;
+}
 
 export const PROCESS = [
   { num: '01', title: 'Understand', text: 'Understand the requirement, idea, and technical objective.' },

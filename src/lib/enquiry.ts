@@ -6,6 +6,7 @@ export interface Enquiry {
   email: string;
   service: string;
   branch: string;
+  projectType: string;
   message: string;
 }
 
@@ -48,6 +49,7 @@ function summary(v: Enquiry) {
     `Email: ${v.email.trim()}`,
     `Service: ${v.service}`,
     v.branch ? `Branch: ${v.branch}` : null,
+    v.projectType ? `Project type: ${v.projectType}` : null,
     '',
     'Requirement:',
     v.message.trim(),
@@ -84,6 +86,7 @@ export async function submitEnquiry(v: Enquiry, botcheck: string): Promise<void>
         email: v.email.trim(),
         service: v.service,
         branch: v.branch || 'Not specified',
+        project_type: v.projectType || 'Not specified',
         message: v.message.trim(),
         botcheck,
       }),

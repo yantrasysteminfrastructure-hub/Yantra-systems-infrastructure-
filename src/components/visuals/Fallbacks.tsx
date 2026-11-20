@@ -25,5 +25,6 @@ function Gears() {
 /** Static visual shown when WebGL is unavailable for the domain viewer. */
 export function DomainFallbackVisual({ scene }: { scene: DomainScene }) {
   if (scene === 'mechanical') return <Gears />;
-  return <ServiceVisual kind={scene === 'software' ? 'webapp' : scene === 'civil' ? 'civil' : 'embedded'} />;
+  const kind = scene === 'software' ? 'webapp' : scene === 'civil' ? 'civil' : scene === 'business' ? 'docs' : 'embedded';
+  return <ServiceVisual kind={kind} />;
 }

@@ -36,137 +36,228 @@ const CODE: Tok[][] = [
   [['    time.sleep(', S], ['5', K], [')', S]],
 ];
 
-/** Code editor screen used on the laptop. */
-export function createCodeScreen(w = 1024): THREE.CanvasTexture {
+export interface ScreenAnimator {
+  texture: THREE.CanvasTexture;
+  /** Redraws for time t (seconds). Cheap to call every frame: redraws only when the frame changes. */
+  update(t: number): void;
+}
+
+const TOTAL_CHARS = CODE.reduce((n, line) => n + line.reduce((m, [t]) => m + t.length, 0) + 1, 0);
+
+/** Code editor that types itself out, runs, then starts again. */
+export function createCodeScreen(w = 1024): ScreenAnimator {
   const h = Math.round(w * 0.64);
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
   const g = c.getContext('2d')!;
   const u = w / 1024;
-  g.fillStyle = '#0b0d10';
-  g.fillRect(0, 0, w, h);
-  // title bar
-  g.fillStyle = '#121519';
-  g.fillRect(0, 0, w, 34 * u);
-  ['#3a3d43', '#3a3d43', '#3a3d43'].forEach((col, i) => {
-    g.fillStyle = col;
-    g.beginPath();
-    g.arc((20 + i * 18) * u, 17 * u, 5 * u, 0, Math.PI * 2);
-    g.fill();
-  });
-  g.fillStyle = D;
-  g.font = `500 ${13 * u}px ${MONO}`;
-  g.fillText('telemetry.py — firmware', 90 * u, 22 * u);
-  // sidebar
-  g.fillStyle = '#0f1215';
-  g.fillRect(0, 34 * u, 190 * u, h);
-  const files = ['▾ firmware', '   main.py', '   telemetry.py', '   sensors.py', '▾ app', '   dashboard.tsx', '   api.ts', '▾ docs', '   report.md'];
-  files.forEach((f, i) => {
-    if (f.includes('telemetry')) {
-      g.fillStyle = 'rgba(205,242,43,0.10)';
-      g.fillRect(0, (52 + i * 24) * u, 190 * u, 22 * u);
+  const texture = tex(c);
+  const CPS = 34; // characters per second
+  const typeTime = TOTAL_CHARS / CPS;
+  const cycle = typeTime + 5;
+  let lastKey = '';
+
+  const draw = (chars: number, cursorOn: boolean, phase: number) => {
+    g.fillStyle = '#0b0d10';
+    g.fillRect(0, 0, w, h);
+    g.fillStyle = '#121519';
+    g.fillRect(0, 0, w, 34 * u);
+    for (let i = 0; i < 3; i++) {
+      g.fillStyle = '#3a3d43';
+      g.beginPath();
+      g.arc((20 + i * 18) * u, 17 * u, 5 * u, 0, Math.PI * 2);
+      g.fill();
     }
-    g.fillStyle = f.includes('telemetry') ? K : f.startsWith('▾') ? S : D;
+    g.fillStyle = D;
     g.font = `500 ${13 * u}px ${MONO}`;
-    g.fillText(f, 14 * u, (68 + i * 24) * u);
-  });
-  // code
-  const x0 = 236 * u;
-  CODE.forEach((line, i) => {
-    const y = (70 + i * 24) * u;
-    g.fillStyle = '#3d4148';
-    g.font = `400 ${13 * u}px ${MONO}`;
-    g.textAlign = 'right';
-    g.fillText(String(i + 1), x0 - 18 * u, y);
     g.textAlign = 'left';
-    let x = x0;
-    g.font = `500 ${15 * u}px ${MONO}`;
-    line.forEach(([t, col]) => {
-      g.fillStyle = col;
-      g.fillText(t, x, y);
-      x += g.measureText(t).width;
+    g.fillText('telemetry.py — firmware', 90 * u, 22 * u);
+    // sidebar
+    g.fillStyle = '#0f1215';
+    g.fillRect(0, 34 * u, 190 * u, h);
+    const files = ['▾ firmware', '   main.py', '   telemetry.py', '   sensors.py', '▾ app', '   dashboard.tsx', '   api.ts', '▾ docs', '   report.md'];
+    files.forEach((f, i) => {
+      if (f.includes('telemetry')) {
+        g.fillStyle = 'rgba(205,242,43,0.10)';
+        g.fillRect(0, (52 + i * 24) * u, 190 * u, 22 * u);
+      }
+      g.fillStyle = f.includes('telemetry') ? K : f.startsWith('▾') ? S : D;
+      g.font = `500 ${13 * u}px ${MONO}`;
+      g.fillText(f, 14 * u, (68 + i * 24) * u);
     });
-  });
-  // cursor line highlight
-  g.fillStyle = 'rgba(255,255,255,0.03)';
-  g.fillRect(x0 - 10 * u, (70 + 14 * 24 - 17) * u, w, 24 * u);
-  // terminal
-  const ty = h - 120 * u;
-  g.fillStyle = '#0e1114';
-  g.fillRect(190 * u, ty, w, 120 * u);
-  g.fillStyle = '#1b1f24';
-  g.fillRect(190 * u, ty, w, 1 * u);
-  g.font = `500 ${13 * u}px ${MONO}`;
-  [
-    ['TERMINAL', D],
-    ['$ mpremote run telemetry.py', S],
-    ['connected · publishing every 5 s', K],
-  ].forEach(([t, col], i) => {
-    g.fillStyle = col;
-    g.fillText(t, 210 * u, ty + (28 + i * 26) * u);
-  });
-  return tex(c);
+    // code, typed up to `chars`
+    const x0 = 236 * u;
+    let left = chars;
+    let cursor: [number, number] | null = null;
+    CODE.forEach((line, i) => {
+      const y = (70 + i * 24) * u;
+      if (left < 0) return;
+      g.fillStyle = '#3d4148';
+      g.font = `400 ${13 * u}px ${MONO}`;
+      g.textAlign = 'right';
+      g.fillText(String(i + 1), x0 - 18 * u, y);
+      g.textAlign = 'left';
+      let x = x0;
+      g.font = `500 ${15 * u}px ${MONO}`;
+      for (const [t, col] of line) {
+        if (left <= 0) break;
+        const part = t.slice(0, Math.max(0, left));
+        g.fillStyle = col;
+        g.fillText(part, x, y);
+        x += g.measureText(part).width;
+        left -= t.length;
+      }
+      if (left <= 0 && !cursor) cursor = [x, y];
+      left -= 1;
+    });
+    if (!cursor) cursor = [x0, (70 + CODE.length * 24) * u];
+    const [cx, cy] = cursor;
+    g.fillStyle = 'rgba(255,255,255,0.035)';
+    g.fillRect(x0 - 10 * u, cy - 17 * u, w, 24 * u);
+    if (cursorOn) {
+      g.fillStyle = K;
+      g.fillRect(cx + 1 * u, cy - 14 * u, 2 * u, 18 * u);
+    }
+    // terminal
+    const ty = h - 120 * u;
+    g.fillStyle = '#0e1114';
+    g.fillRect(190 * u, ty, w, 120 * u);
+    g.fillStyle = '#1b1f24';
+    g.fillRect(190 * u, ty, w, 1 * u);
+    g.font = `500 ${13 * u}px ${MONO}`;
+    const lines: [string, string][] = [['TERMINAL', D]];
+    if (phase >= 1) lines.push(['$ mpremote run telemetry.py', S]);
+    if (phase >= 2) lines.push(['connected · publishing every 5 s', K]);
+    lines.forEach(([t, col], i) => {
+      g.fillStyle = col;
+      g.fillText(t, 210 * u, ty + (28 + i * 26) * u);
+    });
+    texture.needsUpdate = true;
+  };
+
+  return {
+    texture,
+    update(t: number) {
+      const local = t % cycle;
+      const chars = Math.min(TOTAL_CHARS, Math.floor(local * CPS));
+      const done = local > typeTime;
+      const phase = !done ? 0 : local - typeTime < 1 ? 1 : 2;
+      const cursorOn = !done || Math.floor(t * 2) % 2 === 0;
+      const key = `${chars}|${cursorOn}|${phase}`;
+      if (key === lastKey) return;
+      lastKey = key;
+      draw(chars, cursorOn, phase);
+    },
+  };
 }
 
-/** Generic responsive app UI used on the phone (illustrative interface, not a product claim). */
-export function createPhoneScreen(w = 360): THREE.CanvasTexture {
+/** App dashboard on the phone with a live-updating bar chart (illustrative interface). */
+export function createPhoneScreen(w = 360): ScreenAnimator {
   const h = Math.round(w * 2.05);
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
   const g = c.getContext('2d')!;
   const u = w / 360;
-  g.fillStyle = '#0b0d10';
-  g.fillRect(0, 0, w, h);
-  g.fillStyle = S;
-  g.font = `600 ${14 * u}px ${SANS}`;
-  g.fillText('9:41', 24 * u, 34 * u);
-  g.font = `700 ${26 * u}px ${SANS}`;
-  g.fillText('Dashboard', 24 * u, 92 * u);
-  g.fillStyle = D;
-  g.font = `500 ${13 * u}px ${SANS}`;
-  g.fillText('Connected devices', 24 * u, 116 * u);
-  const card = (y: number, hh: number, accent = false) => {
-    g.fillStyle = accent ? K : '#15181c';
-    g.beginPath();
-    g.roundRect(20 * u, y * u, w - 40 * u, hh * u, 18 * u);
-    g.fill();
-  };
-  card(140, 150, true);
-  g.fillStyle = '#08090B';
-  g.font = `600 ${13 * u}px ${SANS}`;
-  g.fillText('Sensor node', 40 * u, 172 * u);
-  g.font = `700 ${40 * u}px ${SANS}`;
-  g.fillText('Online', 40 * u, 222 * u);
-  for (let i = 0; i < 14; i++) {
-    const bh = (14 + Math.abs(Math.sin(i * 1.7)) * 30) * u;
-    g.fillRect((40 + i * 20) * u, 272 * u - bh, 10 * u, bh);
-  }
-  card(310, 96);
-  card(420, 96);
-  card(530, 96);
-  ['Device status', 'Readings log', 'Settings'].forEach((t, i) => {
+  const texture = tex(c);
+  let lastStep = -1;
+
+  const draw = (step: number) => {
+    g.fillStyle = '#0b0d10';
+    g.fillRect(0, 0, w, h);
     g.fillStyle = S;
-    g.font = `600 ${15 * u}px ${SANS}`;
-    g.fillText(t, 40 * u, (350 + i * 110) * u);
+    g.font = `600 ${14 * u}px ${SANS}`;
+    g.fillText('9:41', 24 * u, 34 * u);
+    g.font = `700 ${26 * u}px ${SANS}`;
+    g.fillText('Dashboard', 24 * u, 92 * u);
     g.fillStyle = D;
-    g.font = `500 ${12 * u}px ${SANS}`;
-    g.fillText('Tap to open', 40 * u, (374 + i * 110) * u);
-    g.fillStyle = '#2a2e34';
+    g.font = `500 ${13 * u}px ${SANS}`;
+    g.fillText('Connected devices', 24 * u, 116 * u);
+    const card = (y: number, hh: number, accent = false) => {
+      g.fillStyle = accent ? K : '#15181c';
+      g.beginPath();
+      g.roundRect(20 * u, y * u, w - 40 * u, hh * u, 18 * u);
+      g.fill();
+    };
+    card(140, 150, true);
+    g.fillStyle = '#08090B';
+    g.font = `600 ${13 * u}px ${SANS}`;
+    g.fillText('Sensor node', 40 * u, 172 * u);
+    g.font = `700 ${40 * u}px ${SANS}`;
+    g.fillText('Online', 40 * u, 222 * u);
+    // pulse dot
     g.beginPath();
-    g.roundRect(w - 90 * u, (340 + i * 110) * u, 46 * u, 26 * u, 13 * u);
+    g.arc(w - 52 * u, 166 * u, (5 + (step % 2) * 2) * u, 0, Math.PI * 2);
     g.fill();
-    g.fillStyle = i === 0 ? K : '#6b6f76';
+    for (let i = 0; i < 14; i++) {
+      const v = Math.abs(Math.sin((i + step) * 1.7) * 0.6 + Math.sin((i + step) * 0.45) * 0.4);
+      const bh = (10 + v * 34) * u;
+      g.globalAlpha = i === 13 ? 1 : 0.55 + i * 0.03;
+      g.fillRect((40 + i * 20) * u, 272 * u - bh, 10 * u, bh);
+    }
+    g.globalAlpha = 1;
+    card(310, 96);
+    card(420, 96);
+    card(530, 96);
+    ['Device status', 'Readings log', 'Settings'].forEach((t, i) => {
+      g.fillStyle = S;
+      g.font = `600 ${15 * u}px ${SANS}`;
+      g.fillText(t, 40 * u, (350 + i * 110) * u);
+      g.fillStyle = D;
+      g.font = `500 ${12 * u}px ${SANS}`;
+      g.fillText(i === 1 ? `Updated ${step % 60}s ago` : 'Tap to open', 40 * u, (374 + i * 110) * u);
+      g.fillStyle = '#2a2e34';
+      g.beginPath();
+      g.roundRect(w - 90 * u, (340 + i * 110) * u, 46 * u, 26 * u, 13 * u);
+      g.fill();
+      g.fillStyle = i === 0 ? K : '#6b6f76';
+      g.beginPath();
+      g.arc(w - (i === 0 ? 57 : 77) * u, (353 + i * 110) * u, 10 * u, 0, Math.PI * 2);
+      g.fill();
+    });
+    g.fillStyle = '#3a3d43';
     g.beginPath();
-    g.arc(w - (i === 0 ? 57 : 77) * u, (353 + i * 110) * u, 10 * u, 0, Math.PI * 2);
+    g.roundRect(w / 2 - 60 * u, h - 22 * u, 120 * u, 5 * u, 3 * u);
     g.fill();
-  });
-  g.fillStyle = '#3a3d43';
-  g.beginPath();
-  g.roundRect(w / 2 - 60 * u, h - 22 * u, 120 * u, 5 * u, 3 * u);
-  g.fill();
-  return tex(c);
+    texture.needsUpdate = true;
+  };
+
+  return {
+    texture,
+    update(t: number) {
+      const step = Math.floor(t * 1.5);
+      if (step === lastStep) return;
+      lastStep = step;
+      draw(step);
+    },
+  };
+}
+
+/** Dark walnut desk surface. */
+export function createWoodTexture(w = 1024): THREE.CanvasTexture {
+  const h = w / 2;
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#2b211b';
+  g.fillRect(0, 0, w, h);
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 260; i++) {
+    const y = rnd() * h;
+    const amp = 2 + rnd() * 6;
+    const freq = 0.002 + rnd() * 0.006;
+    g.strokeStyle = rnd() > 0.5 ? `rgba(70,52,40,${0.25 + rnd() * 0.3})` : `rgba(18,13,10,${0.2 + rnd() * 0.3})`;
+    g.lineWidth = 0.6 + rnd() * 2.2;
+    g.beginPath();
+    for (let x = 0; x <= w; x += 16) g.lineTo(x, y + Math.sin(x * freq + i) * amp);
+    g.stroke();
+  }
+  const t = tex(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
 }
 
 export function createKeyboardTexture(w = 1024): THREE.CanvasTexture {

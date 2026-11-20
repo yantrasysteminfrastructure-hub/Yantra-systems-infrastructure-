@@ -40,14 +40,15 @@ safe in client-side code. A hidden honeypot field filters basic bots.
 
 ```
 src/
-  data/content.ts         All site copy (services, domains, process, principles, contact details)
+  data/content.ts         All site copy: services, programmes → branches → project types, process, contact details
   components/             Page sections: Header, Hero, About, Services, Domains, Process, Why, Contact, Footer
   components/visuals/     SVG technical illustrations + static fallbacks for devices without WebGL
   three/                  3D scenes (lazy-loaded)
     DevBoard.tsx          ESP32-style development board with sensor module and data pulses
     pcbLayout.ts          Shared board layout (keeps the circuit texture and 3D parts aligned)
     pcbTexture.ts         Procedurally drawn PCB texture: soldermask, copper, ENIG pads, silkscreen
-    DomainModels.tsx      Workstation (software), gear train (mechanical), building model (civil)
+    DomainModels.tsx      Animated branch scenes: workstation (software), relay-motor rig (electrical),
+                          gear + crank-slider (mechanical), building under construction (civil)
     SceneCanvas.tsx       Canvas wrapper: lazy mount, offscreen pause, adaptive DPR, WebGL fallback
   lib/enquiry.ts          Form validation and delivery (Web3Forms / WhatsApp / email)
   styles/global.css       Design tokens and all styles
