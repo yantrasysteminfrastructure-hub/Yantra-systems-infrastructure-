@@ -34,7 +34,7 @@ export function Studio({ intensity = 1 }: { intensity?: number }) {
         <Lightformer form="rect" intensity={3} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[12, 6, 1]} />
         <Lightformer form="rect" intensity={1.6} position={[-6, 2, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} />
         <Lightformer form="rect" intensity={1.2} position={[6, 2, -2]} rotation-y={-Math.PI / 2} scale={[8, 3, 1]} />
-        <Lightformer form="rect" intensity={0.8} color="#CDF22B" position={[0, 1.5, -7]} scale={[10, 0.4, 1]} />
+        <Lightformer form="rect" intensity={0.8} color="#FC4728" position={[0, 1.5, -7]} scale={[10, 0.4, 1]} />
         <Lightformer form="ring" intensity={1.4} position={[3, 4, 6]} scale={2.5} />
       </Environment>
     </>

@@ -9,23 +9,57 @@ export const CONTACT = {
   website: 'https://yantra-lyart.vercel.app/',
 } as const;
 
+export const COMPANY = {
+  name: 'Yantra Systems & Infrastructure',
+  short: 'Yantra',
+  tagline: 'Turning Ideas Into Innovation.',
+} as const;
+
+/** Primary navigation (paths handled by the client-side router). */
 export const NAV_ITEMS = [
-  { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'services', label: 'Services' },
-  { id: 'domains', label: 'Domains' },
-  { id: 'contact', label: 'Contact' },
+  { path: '/', label: 'Home' },
+  { path: '/about', label: 'About Us' },
+  { path: '/services', label: 'Services' },
+  { path: '/projects', label: 'Projects' },
+  { path: '/contact', label: 'Contact' },
 ] as const;
 
+/** Kinds of static illustration used where WebGL is unavailable. */
 export type ServiceVisual = 'embedded' | 'btech' | 'degree' | 'docs' | 'webapp' | 'civil';
+
+export type ServiceIcon = 'chip' | 'doc' | 'flask' | 'browser' | 'phone';
+
+export interface ServiceExample {
+  title: string;
+  text: string;
+}
 
 export interface Service {
   id: string;
+  /** URL segment: /services/<slug> */
+  slug: string;
   num: string;
   title: string;
+  /** Short name for tight spaces (hero, menus). */
+  short: string;
+  /** One-line pitch. */
   description: string;
-  visual: ServiceVisual;
+  /** Longer overview for the service page. */
+  overview: string[];
+  /** What we offer (from the client brief). */
   points: string[];
+  /** Technologies and solutions used. */
+  tech: string[];
+  /** Example project types. These are examples of what can be built, not completed client work. */
+  examples: ServiceExample[];
+  /** Estimated turnaround in days. */
+  deliveryDays: number;
+  icon: ServiceIcon;
+  /** Accent hue for this service's light beams. */
+  hue: string;
+  hue2: string;
+  /** 3D scene shown on the service page (from the existing domain scenes). */
+  scene: DomainScene;
   /** Pre-selects this value in the enquiry form. */
   formValue: string;
 }
@@ -33,69 +67,191 @@ export interface Service {
 export const SERVICES: Service[] = [
   {
     id: 'embedded',
+    slug: 'embedded-systems-engineering-projects',
     num: '01',
-    title: 'Embedded Systems',
+    title: 'Embedded Systems & Engineering Projects',
+    short: 'Embedded & Engineering',
     description:
-      'Embedded electronics, microcontroller-based development, IoT applications, sensor integration, and hardware-software interfacing.',
-    visual: 'embedded',
-    points: ['ESP32 & Arduino development', 'Sensor integration', 'IoT applications', 'Hardware–software interfacing'],
-    formValue: 'Embedded Systems / IoT',
-  },
-  {
-    id: 'btech',
-    num: '02',
-    title: 'B.Tech Projects',
-    description: 'Technical project development and guidance for engineering students across different branches.',
-    visual: 'btech',
-    points: ['CSE · ECE · EEE', 'Mechanical · Civil', 'Implementation & guidance', 'Presentation support'],
-    formValue: 'B.Tech Project',
-  },
-  {
-    id: 'degree',
-    num: '03',
-    title: 'Degree Projects',
-    description:
-      'Academic project development and technical guidance for degree students across relevant disciplines.',
-    visual: 'degree',
-    points: ['Practical implementation', 'Concept understanding', 'Project presentation', 'Technical guidance'],
-    formValue: 'Degree Project',
+      'ESP32, Arduino and IoT builds, sensor-based automation and complete B.Tech final-year engineering projects, from circuit to working prototype.',
+    overview: [
+      'We design and build embedded hardware and the firmware that runs on it: microcontroller boards, sensors, actuators and the connectivity that ties them together.',
+      'For engineering students, we develop B.Tech final-year projects as working prototypes, with the circuit design, implementation and explanation needed to present them with confidence.',
+    ],
+    points: [
+      'ESP32 projects',
+      'Arduino projects',
+      'IoT projects',
+      'Microcontroller-based projects',
+      'Sensor-based automation',
+      'Embedded hardware and software development',
+      'B.Tech final-year engineering projects',
+      'Electronic circuit design and implementation',
+    ],
+    tech: ['ESP32', 'Arduino', 'ESP8266 / NodeMCU', 'Embedded C / C++', 'Wi-Fi & Bluetooth', 'Sensors & actuators', 'Relays & motor drivers', 'IoT dashboards', 'Circuit design'],
+    examples: [
+      { title: 'IoT home automation', text: 'Control lights and appliances from a phone over Wi-Fi with an ESP32 and relay module.' },
+      { title: 'Environment monitoring', text: 'Temperature, humidity and air-quality readings pushed to a live online dashboard.' },
+      { title: 'Gas leakage alert', text: 'Gas sensor that triggers a buzzer, cuts power with a relay and sends a phone alert.' },
+      { title: 'RFID attendance', text: 'RFID cards log entries with time stamps to a sheet or database.' },
+    ],
+    deliveryDays: 3,
+    icon: 'chip',
+    hue: '#fc4728',
+    hue2: '#ffb36b',
+    scene: 'embedded',
+    formValue: 'Embedded Systems & Engineering Projects',
   },
   {
     id: 'docs',
-    num: '04',
+    slug: 'project-documentation',
+    num: '02',
     title: 'Project Documentation',
+    short: 'Documentation',
     description:
-      'Structured technical documentation, project reports, diagrams, presentation materials, and project-related documentation support.',
-    visual: 'docs',
-    points: ['Project reports', 'Technical diagrams', 'Presentation material', 'Structured formatting'],
+      'Engineering project reports, technical and architecture documentation, presentations and the diagrams that support them.',
+    overview: [
+      'Good work deserves documentation that explains it clearly. We prepare structured reports and technical documents that follow your institution or organisation format.',
+      'From system architecture write-ups to review presentations, every document comes with the block diagrams, flow charts and technical drawings it needs.',
+    ],
+    points: [
+      'Engineering project reports',
+      'Project documentation',
+      'Technical documentation',
+      'System architecture documentation',
+      'Project presentations',
+      'Technical diagrams and supporting documents',
+    ],
+    tech: ['Microsoft Word', 'PowerPoint', 'Block & circuit diagrams', 'UML / ER / DFD', 'Flow charts', 'Architecture diagrams', 'College / university formats'],
+    examples: [
+      { title: 'Final-year project report', text: 'Abstract, literature survey, methodology, results and conclusion in your college format.' },
+      { title: 'System architecture document', text: 'Components, data flow and interfaces of a software or IoT system, with diagrams.' },
+      { title: 'Review / viva presentation', text: 'A clear slide deck that walks reviewers through the problem, design and results.' },
+      { title: 'Diagram set', text: 'Block, circuit, UML, ER and flow diagrams prepared for an existing project.' },
+    ],
+    deliveryDays: 1,
+    icon: 'doc',
+    hue: '#f5c84c',
+    hue2: '#fff1b8',
+    scene: 'business',
     formValue: 'Project Documentation',
   },
   {
-    id: 'webapp',
-    num: '05',
-    title: 'Web & Mobile App Development',
-    description: 'Design and development of modern websites, web applications, and mobile applications.',
-    visual: 'webapp',
-    points: ['Websites', 'Web applications', 'Mobile applications', 'Responsive UI design'],
-    formValue: 'Web / Mobile App Development',
+    id: 'school',
+    slug: 'school-projects',
+    num: '03',
+    title: 'School Projects',
+    short: 'School Projects',
+    description:
+      'Science exhibition projects, working models, robotics and electronics-based STEM projects that students can understand and demonstrate.',
+    overview: [
+      'We build school projects that actually work and that students can explain: science exhibition models, electronics projects and simple robotics.',
+      'Each model comes with an explanation of the science behind it, so the student can present it confidently at the exhibition or in class.',
+    ],
+    points: [
+      'Science exhibition projects',
+      'Working models',
+      'Electronics-based school projects',
+      'Robotics models',
+      'Innovative STEM projects',
+      'Educational demonstrations',
+    ],
+    tech: ['Arduino basics', 'Sensors (IR, ultrasonic, LDR)', 'LEDs, buzzers & displays', 'DC & servo motors', 'Solar panels', 'Simple circuits'],
+    examples: [
+      { title: 'Smart parking model', text: 'Sensors detect free slots and switch each slot light. Yantra has built this one as a working model.' },
+      { title: 'Automatic street light', text: 'An LDR switches lights on at dusk and off at dawn.' },
+      { title: 'Obstacle-avoiding robot', text: 'A small robot car that senses walls with an ultrasonic sensor and turns away.' },
+      { title: 'Solar tracker', text: 'A panel that follows the brightest light using two light sensors and a servo.' },
+    ],
+    deliveryDays: 3,
+    icon: 'flask',
+    hue: '#2fe3a4',
+    hue2: '#b8ffe4',
+    scene: 'parking',
+    formValue: 'School Projects',
   },
   {
-    id: 'civil',
-    num: '06',
-    title: 'Civil Works & Infrastructure',
-    description: 'Civil works and infrastructure-related services.',
-    visual: 'civil',
-    points: ['Civil works', 'Infrastructure-related services', 'Planning discussion', 'Scope defined per requirement'],
-    formValue: 'Civil Works / Infrastructure',
+    id: 'web',
+    slug: 'website-development',
+    num: '04',
+    title: 'Website Designing & Development',
+    short: 'Websites',
+    description:
+      'Business, portfolio and e-commerce websites, landing pages, redesigns, admin dashboards and database-integrated web applications.',
+    overview: [
+      'We design and develop fast, responsive websites that look right on every screen, from a single landing page to a full e-commerce store with an admin dashboard.',
+      'Sites are built with modern web technology, connected to a database where needed, and handed over ready to publish.',
+    ],
+    points: [
+      'Business websites',
+      'Portfolio websites',
+      'E-commerce websites',
+      'Responsive website development',
+      'Landing pages',
+      'Website redesign',
+      'Admin dashboards',
+      'Database-integrated websites',
+    ],
+    tech: ['HTML, CSS & JavaScript', 'React', 'Node.js', 'MySQL / MongoDB / Firebase', 'REST APIs', 'Responsive design', 'SEO basics', 'Hosting & deployment'],
+    examples: [
+      { title: 'Business website', text: 'Company pages, services, enquiry form and WhatsApp link, optimised for mobile.' },
+      { title: 'E-commerce store', text: 'Product catalogue, cart, orders and an admin panel to manage them.' },
+      { title: 'Admin dashboard', text: 'Login-protected panel to manage records, users and reports from a database.' },
+      { title: 'Landing page', text: 'A focused single page for a product, event or campaign with a lead form.' },
+    ],
+    deliveryDays: 10,
+    icon: 'browser',
+    hue: '#b15cff',
+    hue2: '#ffb8f0',
+    scene: 'software',
+    formValue: 'Website Designing & Development',
+  },
+  {
+    id: 'mobile',
+    slug: 'mobile-app-development',
+    num: '05',
+    title: 'Mobile Application Development',
+    short: 'Mobile Apps',
+    description:
+      'Android, business and e-commerce apps, customer and service-provider apps, with admin panels and API integration.',
+    overview: [
+      'We develop mobile applications for businesses and ideas of every size: customer apps, service-provider apps, stores and internal business tools.',
+      'Apps can be connected to an admin panel and to your APIs or database, so you can manage content, orders and users in one place.',
+    ],
+    points: [
+      'Android applications',
+      'Business applications',
+      'E-commerce mobile applications',
+      'Customer and service-provider applications',
+      'Admin-integrated mobile applications',
+      'API-integrated applications',
+      'Custom mobile application development',
+    ],
+    tech: ['Android', 'Cross-platform frameworks', 'REST API integration', 'Firebase', 'Push notifications', 'Admin panel integration', 'Play Store release support'],
+    examples: [
+      { title: 'Service booking app', text: 'Customers book a service; providers accept and update the job from their own app.' },
+      { title: 'E-commerce app', text: 'Browse products, place orders and track them, managed from an admin panel.' },
+      { title: 'Business utility app', text: 'Internal app for attendance, inventory or field reports connected to an API.' },
+      { title: 'IoT companion app', text: 'Phone app that monitors and controls an ESP32-based device.' },
+    ],
+    deliveryDays: 15,
+    icon: 'phone',
+    hue: '#35c8ff',
+    hue2: '#b8f0ff',
+    scene: 'software',
+    formValue: 'Mobile Application Development',
   },
 ];
 
-export const SERVICE_OPTIONS = [
-  ...SERVICES.map((s) => s.formValue),
-  'MBA Project / Documentation',
-  'School Project',
-  'Other / Not sure yet',
-];
+export const serviceBySlug = (slug: string) => SERVICES.find((s) => s.slug === slug);
+export const servicePath = (s: Service) => `/services/${s.slug}`;
+export const deliveryLabel = (days: number) => `${days} ${days === 1 ? 'Day' : 'Days'}`;
+
+/** Shown wherever delivery times appear. */
+export const DELIVERY_NOTE =
+  'Estimated turnaround times. Actual delivery depends on project scope, requirements, approvals and availability of materials.';
+
+export const OTHER_SERVICE = 'Other / Not sure yet';
+export const SERVICE_OPTIONS = [...SERVICES.map((s) => s.formValue), OTHER_SERVICE];
 
 export type DomainScene = 'software' | 'embedded' | 'electrical' | 'mechanical' | 'civil' | 'business' | 'parking';
 export type ProgrammeId = 'btech' | 'degree' | 'mba' | 'school';
@@ -130,7 +286,7 @@ export const PROGRAMMES: Programme[] = [
   {
     id: 'btech',
     label: 'B.Tech',
-    formService: 'B.Tech Project',
+    formService: 'Embedded Systems & Engineering Projects',
     types: ENGINEERING_TYPES,
     branches: [
       {
@@ -188,7 +344,7 @@ export const PROGRAMMES: Programme[] = [
   {
     id: 'degree',
     label: 'Degree',
-    formService: 'Degree Project',
+    formService: 'Embedded Systems & Engineering Projects',
     types: ENGINEERING_TYPES,
     branches: [
       {
@@ -246,7 +402,7 @@ export const PROGRAMMES: Programme[] = [
   {
     id: 'mba',
     label: 'MBA',
-    formService: 'MBA Project / Documentation',
+    formService: 'Project Documentation',
     types: ['report', 'documentation', 'ppt'],
     branches: [
       {
@@ -304,7 +460,7 @@ export const PROGRAMMES: Programme[] = [
   {
     id: 'school',
     label: 'School',
-    formService: 'School Project',
+    formService: 'School Projects',
     types: ['model', 'complete', 'ppt'],
     branches: [
       {
@@ -389,8 +545,20 @@ export function typesFor(p: Programme): ProjectType[] {
 }
 
 /** The programme a form "Service required" value belongs to, if any. */
-export function programmeForService(service: string): Programme | undefined {
-  return PROGRAMMES.find((p) => p.formService === service);
+/** Student programmes that belong to a form "Service required" value (B.Tech and Degree share one). */
+export function programmesForService(service: string): Programme[] {
+  return PROGRAMMES.filter((p) => p.formService === service);
+}
+
+/** Branch names relevant to a service; every branch when the service has no student programme. */
+export function branchesForService(service: string): string[] {
+  const ps = programmesForService(service);
+  return (ps.length ? ps : PROGRAMMES).flatMap((p) => p.branches.map((b) => b.title));
+}
+
+/** Project type labels offered for a service's student programmes (de-duplicated). */
+export function projectTypesForService(service: string): string[] {
+  return [...new Set(programmesForService(service).flatMap((p) => typesFor(p).map((t) => t.label)))];
 }
 
 /** Every branch name, for the enquiry form when no programme is chosen. */

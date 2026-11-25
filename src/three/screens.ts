@@ -11,7 +11,7 @@ function tex(c: HTMLCanvasElement) {
 }
 
 type Tok = [string, string];
-const K = '#CDF22B'; // keyword (brand lime)
+const K = '#FC4728'; // keyword (brand lime)
 const S = '#e8e6de'; // standard
 const D = '#7d8189'; // dim / comment
 const N = '#b9c3cf'; // names / strings
@@ -79,7 +79,7 @@ export function createCodeScreen(w = 1024): ScreenAnimator {
     const files = ['▾ firmware', '   main.py', '   telemetry.py', '   sensors.py', '▾ app', '   dashboard.tsx', '   api.ts', '▾ docs', '   report.md'];
     files.forEach((f, i) => {
       if (f.includes('telemetry')) {
-        g.fillStyle = 'rgba(205,242,43,0.10)';
+        g.fillStyle = 'rgba(252, 71, 40,0.10)';
         g.fillRect(0, (52 + i * 24) * u, 190 * u, 22 * u);
       }
       g.fillStyle = f.includes('telemetry') ? K : f.startsWith('▾') ? S : D;

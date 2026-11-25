@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { PROGRAMMES, type Branch, type Programme } from '../data/content';
 import type { Idea } from '../data/ideas';
-import { requestEnquiry } from './Services';
+import { requestEnquiry } from '../lib/enquiryBus';
 import { OPEN_IDEA_EVENT } from '../lib/guideEvents';
 import { scrollToId } from '../hooks';
 

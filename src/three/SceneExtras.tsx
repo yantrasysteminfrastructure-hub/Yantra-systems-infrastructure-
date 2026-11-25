@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
-import { LIME } from './DevBoard';
+import { ACCENT } from './DevBoard';
 import { createWoodTexture } from './screens';
 
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
@@ -97,7 +97,7 @@ export function SmartParking({ animate }: { animate: boolean }) {
       g.textAlign = 'center';
       SLOT_X.forEach((x, i) => g.fillText(`P${i + 1}`, px(x), pz(-0.2)));
       // lane arrows
-      g.fillStyle = 'rgba(205,242,43,0.75)';
+      g.fillStyle = 'rgba(252, 71, 40,0.75)';
       [-1.6, 0, 1.6].forEach((x) => {
         const cx = px(x);
         const cy = pz(LANE_Z);
@@ -132,9 +132,9 @@ export function SmartParking({ animate }: { animate: boolean }) {
   const wire = useDisposable(() => new THREE.MeshStandardMaterial({ color: '#2c2f35', roughness: 0.5 }));
   const carWhite = useDisposable(() => new THREE.MeshStandardMaterial({ color: '#e7e5df', metalness: 0.4, roughness: 0.3 }));
   const carGraphite = useDisposable(() => new THREE.MeshStandardMaterial({ color: '#3d4148', metalness: 0.6, roughness: 0.3 }));
-  const carLime = useDisposable(() => new THREE.MeshStandardMaterial({ color: LIME, metalness: 0.3, roughness: 0.35 }));
+  const carLime = useDisposable(() => new THREE.MeshStandardMaterial({ color: ACCENT, metalness: 0.3, roughness: 0.35 }));
   const ledMats = useMemo(
-    () => SLOT_X.map(() => new THREE.MeshStandardMaterial({ color: '#222', emissive: LIME, emissiveIntensity: 2, toneMapped: false })),
+    () => SLOT_X.map(() => new THREE.MeshStandardMaterial({ color: '#222', emissive: ACCENT, emissiveIntensity: 2, toneMapped: false })),
     [],
   );
   useEffect(() => () => ledMats.forEach((m) => m.dispose()), [ledMats]);
@@ -159,7 +159,7 @@ export function SmartParking({ animate }: { animate: boolean }) {
         g.font = `600 22px ${MONO}`;
         g.textAlign = 'center';
         g.fillText('FREE SLOTS', 128, 40);
-        g.fillStyle = free > 0 ? LIME : '#ff8a7a';
+        g.fillStyle = free > 0 ? ACCENT : '#ff8a7a';
         g.font = `700 58px ${SANS}`;
         g.fillText(`${free} / 4`, 128, 104);
         tex.needsUpdate = true;
@@ -233,8 +233,8 @@ export function SmartParking({ animate }: { animate: boolean }) {
     let free = 0;
     SLOT_X.forEach((_, i) => {
       const occupied = PARKED[i] || (i === 1 && z < -0.3);
-      ledMats[i].color.set(occupied ? '#3a0f0b' : '#2a3010');
-      ledMats[i].emissive.set(occupied ? '#ff5a3c' : LIME);
+      ledMats[i].color.set(occupied ? '#3a0f0b' : '#3a160e');
+      ledMats[i].emissive.set(occupied ? '#ff5a3c' : ACCENT);
       if (!occupied) free++;
     });
     display.draw(free);
@@ -386,7 +386,7 @@ function reportPage(withChart: boolean) {
 export function ReportDesk({ animate }: { animate: boolean }) {
   const wood = useDisposable(() => createWoodTexture(1024));
   const desk = useDisposable(() => new THREE.MeshStandardMaterial({ map: wood, roughness: 0.55 }));
-  const coverA = useDisposable(() => reportCover('Project\nReport', 'MBA · Finance', LIME));
+  const coverA = useDisposable(() => reportCover('Project\nReport', 'MBA · Finance', ACCENT));
   const coverB = useDisposable(() => reportCover('Market\nStudy', 'Survey analysis', '#c9a35a'));
   const coverC = useDisposable(() => reportCover('Internship\nReport', 'Documentation', '#8fa3ad'));
   const pageL = useDisposable(() => reportPage(false));
@@ -402,7 +402,7 @@ export function ReportDesk({ animate }: { animate: boolean }) {
   const blank = useDisposable(() => new THREE.MeshStandardMaterial({ color: '#f6f4ee', roughness: 0.9, side: THREE.DoubleSide }));
   const shell = useDisposable(() => new THREE.MeshStandardMaterial({ color: '#2c2f35', metalness: 0.7, roughness: 0.35 }));
   const pen = useDisposable(() => new THREE.MeshStandardMaterial({ color: '#15171b', metalness: 0.5, roughness: 0.3 }));
-  const penTip = useDisposable(() => new THREE.MeshStandardMaterial({ color: LIME, roughness: 0.4 }));
+  const penTip = useDisposable(() => new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.4 }));
 
   // live dashboard on the tablet
   const dash = useMemo(() => {
@@ -430,7 +430,7 @@ export function ReportDesk({ animate }: { animate: boolean }) {
         const vals = [0.5, 0.72, 0.6, 0.85, 0.68, 0.78].map((v, i) => Math.max(0.15, Math.min(0.95, v + Math.sin(step + i) * 0.08)));
         vals.forEach((v, i) => {
           const h = v * 210 * p;
-          g.fillStyle = i === 3 ? LIME : '#3a3d43';
+          g.fillStyle = i === 3 ? ACCENT : '#3a3d43';
           g.fillRect(40 + i * 62, 330 - h, 40, h);
         });
         g.strokeStyle = '#2a2d32';
@@ -448,7 +448,7 @@ export function ReportDesk({ animate }: { animate: boolean }) {
           g.fillStyle = '#7d8189';
           g.font = `500 15px ${MONO}`;
           g.fillText(k.toUpperCase(), 464, 140 + i * 110);
-          g.fillStyle = i ? LIME : '#e8e6de';
+          g.fillStyle = i ? ACCENT : '#e8e6de';
           g.font = `700 34px ${SANS}`;
           g.fillText(v, 464, 182 + i * 110);
         });

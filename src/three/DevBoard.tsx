@@ -24,7 +24,7 @@ import {
 } from './pcbLayout';
 import { createAntennaTexture, createPcbTextures, createShieldTexture } from './pcbTexture';
 
-export const LIME = '#CDF22B';
+export const ACCENT = '#FC4728';
 
 const mat = {
   plastic: new THREE.MeshStandardMaterial({ color: '#121315', roughness: 0.55, metalness: 0 }),
@@ -42,8 +42,8 @@ const mat = {
   sensorWhite: new THREE.MeshStandardMaterial({ color: '#e9e7e1', roughness: 0.65 }),
   wireGrey: new THREE.MeshStandardMaterial({ color: '#3a3d43', roughness: 0.5 }),
   wireLight: new THREE.MeshStandardMaterial({ color: '#d9d7d0', roughness: 0.5 }),
-  wireLime: new THREE.MeshStandardMaterial({ color: LIME, roughness: 0.45 }),
-  pulse: new THREE.MeshBasicMaterial({ color: LIME, toneMapped: false }),
+  wireLime: new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.45 }),
+  pulse: new THREE.MeshBasicMaterial({ color: ACCENT, toneMapped: false }),
 };
 
 function Board({ textureSize }: { textureSize: number }) {
@@ -187,8 +187,8 @@ function Passives() {
 }
 
 function Leds({ animate }: { animate: boolean }) {
-  const ioMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#2a3010', emissive: LIME, emissiveIntensity: 0.4, toneMapped: false }), []);
-  const pwrMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#2a3010', emissive: LIME, emissiveIntensity: 2.2, toneMapped: false }), []);
+  const ioMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#3a160e', emissive: ACCENT, emissiveIntensity: 0.4, toneMapped: false }), []);
+  const pwrMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#3a160e', emissive: ACCENT, emissiveIntensity: 2.2, toneMapped: false }), []);
   useFrame(({ clock }) => {
     if (!animate) return;
     const t = clock.elapsedTime % 1.6;
@@ -204,7 +204,7 @@ function Leds({ animate }: { animate: boolean }) {
           <boxGeometry args={[0.16, 0.06, 0.09]} />
         </mesh>
       ))}
-      <pointLight position={[LED_PWR.x, TOP + 0.25, LED_PWR.z]} color={LIME} intensity={0.35} distance={1.2} decay={2} />
+      <pointLight position={[LED_PWR.x, TOP + 0.25, LED_PWR.z]} color={ACCENT} intensity={0.35} distance={1.2} decay={2} />
     </group>
   );
 }
