@@ -9,9 +9,6 @@ import {
   PROCESS,
   PROGRAMMES,
   SERVICES,
-  DELIVERY_NOTE,
-  deliveryLabel,
-  servicePath,
   fillDeliverable,
   typesFor,
   type Branch,
@@ -173,11 +170,12 @@ function detectProgramme(t: string): Programme | undefined {
 }
 
 const SERVICE_PATTERNS: [string, RegExp][] = [
-  ['embedded', /\b(embedded|iot|esp32|arduino|microcontroller|sensor|hardware|electronics|circuit|btech project|engineering project|final year)\b/],
-  ['mobile', /\b(mobile app|mobile apps|android|ios|app development|application development|apps?)\b/],
-  ['web', /\b(web|website|websites|web app|landing page|e ?commerce|portfolio site|dashboard|software)\b/],
-  ['docs', /\b(documentation|report writing|technical document)\b/],
-  ['school', /\b(school project|science exhibition|science fair|working model|robotics|stem)\b/],
+  ['embedded', /\b(embedded|iot|esp32|arduino|microcontroller|sensor|hardware|electronics)\b/],
+  ['webapp', /\b(web|website|websites|web app|mobile app|android|ios|app development|application development|software)\b/],
+  ['civil', /\b(civil work|civil works|construction|infrastructure|building|plan drawing|drawings?)\b/],
+  ['docs', /\b(documentation|report writing)\b/],
+  ['btech', /\bbtech project/],
+  ['degree', /\bdegree project/],
 ];
 
 function detectService(t: string) {
@@ -367,10 +365,7 @@ export function createBot() {
       };
     if (any(t, /\b(how long|how many days|days|weeks|deadline|urgent|duration|time ?line|timeline|delivery date|when can|asap)\b/))
       return {
-        text: ctx.service
-          ? [`Estimated delivery for ${ctx.service.title}: ${deliveryLabel(ctx.service.deliveryDays)}.`, DELIVERY_NOTE]
-          : ['Estimated delivery times for each service:'],
-        bullets: ctx.service ? undefined : SERVICES.map((s) => `${s.title} — ${deliveryLabel(s.deliveryDays)}`),
+        text: ['Timelines depend on the scope of your project. Share your deadline when you enquire and the team will tell you what’s possible.'],
         actions: contactActions(ctx),
       };
     if (any(t, /\b(where|location|address|office|located|city|visit|branch office|near me)\b/) && !branchHit && !wantsIdeas)
@@ -421,7 +416,7 @@ export function createBot() {
     if (any(t, /\b(about (yantra|you|the company|company)|what is yantra|who is yantra|what do you do|company)\b/))
       return {
         text: [
-          'Yantra Systems & Infrastructure works across embedded systems, engineering and academic projects, project documentation, school projects, websites and mobile apps — turning concepts into practical implementations.',
+          'Yantra Systems & Infrastructure works across engineering, technology, academic project development, software solutions and infrastructure-related services — turning concepts into practical implementations.',
           'Tagline: “Turning Ideas Into Innovation.”',
         ],
         chips: MAIN_CHIPS,
@@ -513,11 +508,11 @@ export function createBot() {
   function serviceReply(svc: Service): BotReply {
     ctx.service = svc;
     return {
-      text: [`${svc.title}: ${svc.description}`, `Estimated delivery: ${deliveryLabel(svc.deliveryDays)} (depends on scope).`],
+      text: [`${svc.title}: ${svc.description}`],
       bullets: svc.points,
       actions: [
-        { kind: 'enquire', preset: { service: svc.formValue }, label: `Enquire about ${svc.short}` },
-        { kind: 'link', href: servicePath(svc), label: 'Open service page' },
+        { kind: 'enquire', preset: { service: svc.formValue }, label: `Enquire about ${svc.title}` },
+        { kind: 'scroll', id: 'services', label: 'See all services' },
       ],
       chips: MAIN_CHIPS.filter((c) => c !== 'Your services').slice(0, 4),
     };
@@ -525,17 +520,17 @@ export function createBot() {
 
   function servicesReply(): BotReply {
     return {
-      text: ['Yantra offers five services:'],
-      bullets: SERVICES.map((s) => `${s.title} (est. ${deliveryLabel(s.deliveryDays).toLowerCase()}) — ${s.description}`),
-      actions: [{ kind: 'link', href: '/services', label: 'See all services' }],
-      chips: ['Embedded systems', 'Website development', 'Mobile apps', 'School projects'],
+      text: ['Yantra offers six services:'],
+      bullets: SERVICES.map((s) => `${s.title} — ${s.description}`),
+      actions: [{ kind: 'scroll', id: 'services', label: 'See services' }],
+      chips: ['Embedded systems', 'Web & mobile apps', 'Civil works', 'What does documentation include?'],
     };
   }
 
   function help(): BotReply {
     return {
       text: ['I can help you with:'],
-      bullets: ['Project ideas for your branch (B.Tech, Degree, MBA, School)', 'What a complete project, documentation or PPT includes', 'Our services, delivery times and process', 'Contacting the team on WhatsApp, phone or email'],
+      bullets: ['Project ideas for your branch (B.Tech, Degree, MBA, School)', 'What a complete project, documentation or PPT includes', 'Our services and process', 'Contacting the team on WhatsApp, phone or email'],
       chips: MAIN_CHIPS,
     };
   }

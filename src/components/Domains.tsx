@@ -3,7 +3,7 @@ import { PROGRAMMES, fillDeliverable, typesFor, type DomainScene as SceneId, typ
 import { hasWebGL, scrollToId } from '../hooks';
 import { OPEN_PLANNER_EVENT, type PlannerTarget } from '../lib/guideEvents';
 import { DomainFallback } from './visuals/DomainFallback';
-import { requestEnquiry } from '../lib/enquiryBus';
+import { requestEnquiry } from './Services';
 import { IdeaExplorer } from './IdeaExplorer';
 
 const DomainScene = lazy(() => import('../three/DomainScene'));
@@ -54,15 +54,15 @@ export function Domains() {
   }, []);
 
   return (
-    <section id="domains" className="section domains" aria-labelledby="domains-title">
+    <section id="domains" className="section section--light domains" aria-labelledby="domains-title">
       <div className="container">
         <header className="section-head">
           <p className="eyebrow" data-reveal>
-            Project planner
+            <span className="eyebrow__num">03</span> Industries / Domains
           </p>
           <div className="section-head__row">
             <h2 id="domains-title" className="h2" data-reveal>
-              Plan your <span className="grad">academic project.</span>
+              Across engineering <span className="mark">disciplines.</span>
             </h2>
             <p className="section-head__aside" data-reveal>
               Choose your programme, branch and the kind of help you need &mdash; see what&rsquo;s included, then send it straight to
@@ -167,7 +167,7 @@ export function Domains() {
               <div className="domains__foot">
                 <button
                   type="button"
-                  className="btn btn--light"
+                  className="btn btn--dark"
                   onClick={() => requestEnquiry({ service: programme.formService, branch: branch.title, projectType: type.label })}
                 >
                   Enquire: {tag} · {type.label}

@@ -9,40 +9,52 @@ export interface TourStep {
   text: string;
 }
 
-/** The guided walk through the home page, top to bottom. */
+/** The guided walk through the website, top to bottom. */
 export const TOUR: TourStep[] = [
+  {
+    section: 'about',
+    target: '#about .about__copy',
+    title: 'About Yantra',
+    text: 'Who we are: Yantra Systems & Infrastructure works across engineering, technology, academic projects, software and infrastructure — turning ideas into working implementations.',
+  },
   {
     section: 'services',
     target: '.svc-grid',
-    title: 'Our services',
-    text: 'Yantra offers five services: Embedded Systems & Engineering Projects, Project Documentation, School Projects, Website Development and Mobile App Development. Tap any card for its full page.',
+    title: 'Services',
+    text: 'Our six services: Embedded Systems, B.Tech Projects, Degree Projects, Project Documentation, Web & Mobile Apps, and Civil Works. Each card has an “Enquire” button that fills the contact form for you.',
   },
   {
-    section: 'turnaround',
-    target: '.turn__grid',
-    title: 'Delivery estimates',
-    text: 'Every service shows its estimated delivery: documentation in 1 day, embedded and school projects in 3 days, websites in 10 and mobile apps in 15. Final timelines depend on your scope.',
+    section: 'domains',
+    target: '.planner',
+    title: 'Project planner',
+    text: 'Plan your project in three taps: pick your programme (B.Tech, Degree, MBA or School), your branch, and the help you need — complete project, documentation, PPT and more. It shows exactly what’s included.',
+  },
+  {
+    section: 'ideas',
+    target: '.ideas__head',
+    title: 'Project ideas',
+    text: 'Stuck on a topic? Browse ideas for your branch or search them all. Each idea explains what it is, how it works, and why it’s useful today and in the future. The Smart Parking System is one we’ve built.',
   },
   {
     section: 'process',
-    target: '#process .steps__head',
+    target: '.timeline',
     title: 'How we work',
-    text: 'Every project follows five steps: Understand, Plan, Develop, Test and Deliver, so nothing gets lost between your first message and the final hand-over.',
+    text: 'Every project follows five steps: Understand, Plan, Develop, Test and Deliver — so nothing gets lost between your first message and the final hand-over.',
   },
   {
-    section: 'ways',
-    target: '.ways__grid',
-    title: 'Ways to start',
-    text: `Request a quote with the form, chat on WhatsApp, or call ${CONTACT.phoneDisplay}. Whatever is easiest for you.`,
+    section: 'why',
+    target: '.principles',
+    title: 'Why Yantra',
+    text: 'What we focus on: a practical approach, a structured process, quality, clear communication and the documentation your work actually needs.',
   },
   {
-    section: 'start',
-    target: '#start',
-    title: 'Projects & ideas',
-    text: 'Students: the Projects page has a planner for B.Tech, Degree, MBA and School projects, plus a library of project ideas. Ask me for ideas for your branch any time.',
+    section: 'contact',
+    target: '.enquiry',
+    title: 'Contact',
+    text: `Ready to start? Fill this enquiry form, or reach us directly on ${CONTACT.phoneDisplay} (call or WhatsApp) or by email. The team will get back to you to discuss your project.`,
   },
   {
-    title: 'That’s the tour!',
-    text: 'From now on I’m your assistant. Ask me about a service, delivery times, project ideas for your branch, or how to contact the team.',
+    title: 'That’s the whole website!',
+    text: 'From now on I’m your assistant. Ask me for project ideas for your branch, what documentation or a PPT includes, or how to contact the team.',
   },
 ];

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { scrollToId, useReducedMotion } from '../hooks';
-import { navigate } from '../lib/router';
-import { requestEnquiry } from '../lib/enquiryBus';
+import { requestEnquiry } from '../components/Services';
 import { openIdea, openPlanner } from '../lib/guideEvents';
 import { createBot, WELCOME_CHIPS, type Action, type BotReply } from './bot';
 import { TOUR } from './tour';
@@ -65,7 +64,7 @@ function speak(text: string, on: boolean) {
   window.speechSynthesis.speak(u);
 }
 
-/** Accent ring that follows the element being explained. */
+/** Lime ring that follows the element being explained. */
 function Ring({ selector }: { selector?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -329,10 +328,7 @@ export default function Guide() {
         break;
       case 'link':
         if (a.external) window.open(a.href, '_blank', 'noopener');
-        else {
-          navigate(a.href);
-          collapseIfNarrow();
-        }
+        else window.location.href = a.href;
         break;
       case 'enquire':
         requestEnquiry(a.preset);

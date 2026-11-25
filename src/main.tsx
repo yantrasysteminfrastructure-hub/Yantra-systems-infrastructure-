@@ -2,7 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './styles/global.css';
-import './styles/legacy.css';
 
 // Canvas roundRect is missing on some older mobile browsers; fall back to a plain rect.
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {

@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Yantra Systems &amp; Infrastructure | Embedded Systems, Engineering Projects, Web &amp; App Development</title>
+    <title>Yantra Systems &amp; Infrastructure | Embedded Systems, B.Tech &amp; Degree Projects, Web Development</title>
     <meta
       name="description"
-      content="Yantra Systems & Infrastructure: ESP32, Arduino and IoT embedded systems, B.Tech engineering projects, project documentation, school projects, website design and mobile app development."
+      content="Yantra Systems & Infrastructure turns technical ideas into working outcomes: embedded systems and IoT (ESP32, Arduino), B.Tech and degree project development, project documentation, web and mobile app development, and civil works."
     />
-    <meta name="theme-color" content="#07061A" />
+    <meta name="theme-color" content="#08090B" />
     <link rel="canonical" href="https://yantra-lyart.vercel.app/" />
 
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
@@ -20,7 +20,7 @@
     <meta property="og:title" content="Yantra Systems & Infrastructure — Turning Ideas Into Innovation." />
     <meta
       property="og:description"
-      content="Embedded systems & engineering projects, project documentation, school projects, website development and mobile app development."
+      content="Embedded systems & IoT, B.Tech and degree engineering projects, project documentation, web & mobile app development and civil works."
     />
     <meta property="og:url" content="https://yantra-lyart.vercel.app/" />
     <meta property="og:image" content="https://yantra-lyart.vercel.app/og-image.png" />
@@ -29,13 +29,13 @@
     <meta property="og:image:alt" content="Yantra Systems & Infrastructure logo — Turning Ideas Into Innovation." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Yantra Systems & Infrastructure" />
-    <meta name="twitter:description" content="Embedded systems, engineering projects, documentation, school projects, websites and mobile apps." />
+    <meta name="twitter:description" content="Engineering ideas into reality — embedded systems, engineering projects, software and infrastructure." />
     <meta name="twitter:image" content="https://yantra-lyart.vercel.app/og-image.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@200;300;400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="preload" as="image" href="/logo.webp" type="image/webp" />
@@ -54,95 +54,22 @@
           "Embedded Systems",
           "IoT",
           "ESP32",
-          "Arduino",
-          "B.Tech Engineering Projects",
+          "B.Tech Projects",
+          "Degree Projects",
           "Project Documentation",
-          "School Projects",
-          "Website Development",
-          "Mobile Application Development"
+          "Web Development",
+          "Mobile App Development",
+          "Civil Works"
         ]
       }
     </script>
-
-    <!-- loading screen: shown until the app renders (styles inline so it paints immediately) -->
-    <style>
-      #boot {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        display: grid;
-        place-items: center;
-        background:
-          radial-gradient(60% 50% at 50% 45%, rgba(91, 61, 245, 0.45), transparent 70%),
-          #07061a;
-        transition: opacity 0.5s ease, visibility 0s 0.5s;
-      }
-      #boot.is-done {
-        opacity: 0;
-        visibility: hidden;
-      }
-      #boot .boot__plate {
-        padding: 12px 20px;
-        border-radius: 18px;
-        background: #fff;
-        box-shadow: 0 0 80px -10px rgba(123, 92, 255, 0.8);
-        animation: boot-pulse 1.6s ease-in-out infinite;
-      }
-      #boot img {
-        display: block;
-        height: 52px;
-        width: auto;
-      }
-      #boot .boot__bar {
-        width: 160px;
-        height: 3px;
-        margin: 26px auto 0;
-        border-radius: 3px;
-        background: rgba(255, 255, 255, 0.15);
-        overflow: hidden;
-      }
-      #boot .boot__bar::after {
-        content: '';
-        display: block;
-        width: 40%;
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, transparent, #fc4728, transparent);
-        animation: boot-slide 1.1s ease-in-out infinite;
-      }
-      @keyframes boot-pulse {
-        50% {
-          transform: scale(1.03);
-        }
-      }
-      @keyframes boot-slide {
-        from {
-          transform: translateX(-100%);
-        }
-        to {
-          transform: translateX(250%);
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        #boot * {
-          animation: none !important;
-        }
-      }
-    </style>
   </head>
   <body>
     <noscript>
-      <div style="padding:24px;font-family:sans-serif;background:#07061A;color:#F4F2FF">
+      <div style="padding:24px;font-family:sans-serif;background:#08090B;color:#FAF8F3">
         Yantra Systems &amp; Infrastructure — Phone: 8977843546 · Email: yantrasysteminfrastructure@gmail.com
       </div>
-      <style>#boot{display:none}</style>
     </noscript>
-    <div id="boot" role="status" aria-label="Loading Yantra Systems &amp; Infrastructure">
-      <div>
-        <div class="boot__plate"><img src="/logo.webp" alt="" width="153" height="52" /></div>
-        <div class="boot__bar"></div>
-      </div>
-    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

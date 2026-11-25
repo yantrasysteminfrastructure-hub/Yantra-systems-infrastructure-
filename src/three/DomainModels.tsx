@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
-import { ACCENT } from './DevBoard';
+import { LIME } from './DevBoard';
 import { createCodeScreen, createKeyboardTexture, createPhoneScreen, createSitePlanTexture, createWoodTexture } from './screens';
 
 export function useDispose(...items: { dispose(): void }[]) {
@@ -44,7 +44,7 @@ export function Workstation({ animate }: { animate: boolean }) {
   const mat = useMaterial({ color: '#17181b', roughness: 0.9 });
   const pcb = useMaterial({ color: '#111418', roughness: 0.5 });
   const steel = useMaterial({ color: '#c9ccd1', metalness: 1, roughness: 0.3 });
-  const led = useMaterial({ color: '#3a160e', emissive: ACCENT, emissiveIntensity: 2, toneMapped: false });
+  const led = useMaterial({ color: '#2a3010', emissive: LIME, emissiveIntensity: 2, toneMapped: false });
   const desk = useMemo(() => new THREE.MeshStandardMaterial({ map: wood, roughness: 0.55, metalness: 0 }), [wood]);
   useDispose(desk);
   const screenMat = useMemo(
@@ -149,12 +149,12 @@ export function MotorRig({ animate }: { animate: boolean }) {
   const can = useMaterial({ color: '#b9bdc3', metalness: 1, roughness: 0.22 });
   const cell = useMaterial({ color: '#24364a', roughness: 0.35, metalness: 0.2 });
   const blade = useMaterial({ color: '#e6e4dd', roughness: 0.45 });
-  const lime = useMaterial({ color: ACCENT, roughness: 0.4 });
+  const lime = useMaterial({ color: LIME, roughness: 0.4 });
   const wireRed = useMaterial({ color: '#8c2b22', roughness: 0.5 });
   const wireBlk = useMaterial({ color: '#1a1b1e', roughness: 0.5 });
-  const wireLime = useMaterial({ color: ACCENT, roughness: 0.45 });
-  const relayLed = useMaterial({ color: '#3a160e', emissive: ACCENT, emissiveIntensity: 0, toneMapped: false });
-  const pwrLed = useMaterial({ color: '#3a160e', emissive: ACCENT, emissiveIntensity: 2.2, toneMapped: false });
+  const wireLime = useMaterial({ color: LIME, roughness: 0.45 });
+  const relayLed = useMaterial({ color: '#2a3010', emissive: LIME, emissiveIntensity: 0, toneMapped: false });
+  const pwrLed = useMaterial({ color: '#2a3010', emissive: LIME, emissiveIntensity: 2.2, toneMapped: false });
 
   const fan = useRef<THREE.Group>(null);
   const armature = useRef<THREE.Mesh>(null);
@@ -346,7 +346,7 @@ export function GearAssembly({ animate }: { animate: boolean }) {
   const steel = useMaterial({ color: '#c8cbd0', metalness: 1, roughness: 0.26 });
   const oxide = useMaterial({ color: '#7a7e86', metalness: 0.95, roughness: 0.32 });
   const plate = useMaterial({ color: '#45484e', metalness: 0.85, roughness: 0.4 });
-  const accent = useMaterial({ color: ACCENT, metalness: 0.3, roughness: 0.35 });
+  const accent = useMaterial({ color: LIME, metalness: 0.3, roughness: 0.35 });
   const dark = useMaterial({ color: '#3b3e44', metalness: 0.75, roughness: 0.4 });
 
   const centre = big.rp + small.rp; // 2.1
@@ -474,7 +474,7 @@ export function BuildingModel({ animate, since, build = 1.6 }: { animate: boolea
     [],
   );
   useDispose(glass);
-  const crane = useMaterial({ color: ACCENT, roughness: 0.5, metalness: 0.3 });
+  const crane = useMaterial({ color: LIME, roughness: 0.5, metalness: 0.3 });
   const dark = useMaterial({ color: '#2a2c30', roughness: 0.6 });
   const trunk = useMaterial({ color: '#4b3b2e', roughness: 0.9 });
   const leaf = useMaterial({ color: '#5f6b52', roughness: 0.9 });
